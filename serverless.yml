@@ -1,0 +1,84 @@
+service: notes-api
+frameworkVersion: "2"
+
+provider:
+  name: aws
+  runtime: nodejs12.x
+  lambdaHashingVersion: 20201221
+  stage: dev
+  region: us-east-1
+
+functions:
+  createNote:
+    handler: handler.createNote
+    environment:
+      NOTES_TABLE_NAME: !Ref notesTable
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:PutItem
+        Resource: !GetAtt notesTable.Arn
+    events:
+      - http:
+          method: post
+          path: notes
+
+  updateNote:
+    handler: handler.updateNote
+    environment:
+      NOTES_TABLE_NAME: !Ref notesTable
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:UpdateItem
+        Resource: !GetAtt notesTable.Arn
+    events:
+      - http:
+          method: put
+          path: notes/{id}
+
+  deleteNote:
+    handler: handler.deleteNote
+    environment:
+      NOTES_TABLE_NAME: !Ref notesTable
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:DeleteItem
+        Resource: !GetAtt notesTable.Arn
+    events:
+      - http:
+          method: delete
+          path: notes/{id}
+
+  getAllNotes:
+    handler: handler.getAllNotes
+    environment:
+      NOTES_TABLE_NAME: !Ref notesTable
+    iamRoleStatements:
+      - Effect: Allow
+        Action:
+          - dynamodb:Scan
+        Resource: !GetAtt notesTable.Arn
+    events:
+      - http:
+          method: get
+          path: notes
+
+plugins:
+  - serverless-iam-roles-per-function
+
+# you can add CloudFormation resource templates here
+resources:
+  Resources:
+    notesTable:
+      Type: AWS::DynamoDB::Table
+      Properties:
+        TableName: notes
+        BillingMode: PAY_PER_REQUEST
+        AttributeDefinitions:
+          - AttributeName: notesId
+            AttributeType: S
+        KeySchema:
+          - AttributeName: notesId
+            KeyType: HASH
