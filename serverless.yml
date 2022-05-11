@@ -1,6 +1,7 @@
 service: notes-api
 frameworkVersion: "2"
 
+// HEY HEY TELL that node14.x is a must!!!
 provider:
   name: aws
   runtime: nodejs12.x
