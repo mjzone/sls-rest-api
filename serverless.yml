@@ -5,7 +5,7 @@ provider:
   name: aws
   runtime: nodejs14.x
   lambdaHashingVersion: 20201221
-  stage: dev
+  stage: ${opt:stage, 'dev'}
   region: us-east-1
 
 functions:
@@ -75,7 +75,7 @@ functions:
           path: notes
           authorizer:
             name: userpool_authorizer
-            arn: ${ssm:/notes/dev/userPoolId}
+            arn: ${ssm:/notes/${self:provider.stage}/userPoolArn}
 
 plugins:
   - serverless-iam-roles-per-function
