@@ -43,7 +43,7 @@ functions:
       - http:
           method: put
           path: notes/{id}
-          # authorizer: authorizer
+          authorizer: authorizer
 
   deleteNote:
     handler: handler.deleteNote
