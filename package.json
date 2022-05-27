@@ -4,7 +4,7 @@
   "description": "",
   "main": "handler.js",
   "scripts": {
-    "test": "echo \"All tests passed!\""
+    "test": "jest"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +14,8 @@
     "aws-sdk": "^2.1115.0"
   },
   "devDependencies": {
+    "dotenv": "^16.0.1",
+    "jest": "^28.1.0",
     "serverless-iam-roles-per-function": "^3.2.0"
   }
 }
