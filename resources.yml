@@ -55,3 +55,31 @@ userPoolArnParam:
     Name: /notes/${self:provider.stage}/userPoolArn
     Type: String
     Value: !GetAtt cognitoUserPool.Arn
+
+# Cloudfront distribution
+cloudFrontDist:
+  Type: AWS::CloudFront::Distribution
+  Properties:
+    DistributionConfig:
+      Enabled: true
+      Origins:
+        - Id: APIOrigin
+          DomainName: !Join
+            - "."
+            - - !Ref ApiGatewayRestApi
+              - "execute-api"
+              - ${aws:region}
+              - "amazonaws.com"
+          CustomOriginConfig:
+            OriginProtocolPolicy: https-only
+      CacheBehaviors:
+        - PathPattern: /dev/*
+          TargetOriginId: APIOrigin
+          ViewerProtocolPolicy: https-only
+          ForwardedValues:
+            QueryString: true
+      DefaultCacheBehavior:
+        TargetOriginId: APIOrigin
+        ViewerProtocolPolicy: https-only
+        ForwardedValues:
+          QueryString: true
