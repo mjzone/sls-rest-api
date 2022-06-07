@@ -56,6 +56,27 @@ userPoolArnParam:
     Type: String
     Value: !GetAtt cognitoUserPool.Arn
 
+# Cache Policy
+apiCachePolicy:
+  Type: AWS::CloudFront::CachePolicy
+  Properties:
+    CachePolicyConfig:
+      DefaultTTL: 300
+      MaxTTL: 31536000
+      MinTTL: 0
+      Name: APICachePolicyDemo1
+      ParametersInCacheKeyAndForwardedToOrigin:
+        CookiesConfig:
+          CookieBehavior: none
+        EnableAcceptEncodingGzip: true
+        EnableAcceptEncodingBrotli: true
+        HeadersConfig:
+          HeaderBehavior: whitelist
+          Headers:
+            - Authorization
+        QueryStringsConfig:
+          QueryStringBehavior: none
+
 # Cloudfront distribution
 cloudFrontDist:
   Type: AWS::CloudFront::Distribution
@@ -72,14 +93,12 @@ cloudFrontDist:
               - "amazonaws.com"
           CustomOriginConfig:
             OriginProtocolPolicy: https-only
+      DefaultCacheBehavior:
+        TargetOriginId: APIOrigin
+        ViewerProtocolPolicy: https-only
+        CachePolicyId: !Ref apiCachePolicy
       CacheBehaviors:
         - PathPattern: /dev/*
           TargetOriginId: APIOrigin
           ViewerProtocolPolicy: https-only
-          ForwardedValues:
-            QueryString: true
-      DefaultCacheBehavior:
-        TargetOriginId: APIOrigin
-        ViewerProtocolPolicy: https-only
-        ForwardedValues:
-          QueryString: true
+          CachePolicyId: !Ref apiCachePolicy
